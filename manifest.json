@@ -1,0 +1,36 @@
+{
+  "name": "HTTPS Mixed Content Locator",
+  "description": "Easily locate and identify mixed content on any https site.",
+  "version": "1.0",
+  "permissions": [
+    "tabs", "https://*/*"
+  ],
+
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  },
+
+  "content_scripts" : [
+    {
+        "matches" : [ "<all_urls>" ],
+        "js": ["content.js"]
+    }
+  ],
+
+  "browser_action": {
+      "default_title": "Locate mixed content.",
+      "default_icon": {
+            "24": "images/icon24.png",
+            "32": "images/icon32.png"
+      },
+      "default_popup": "popup.html"
+  },
+  
+  "icons": { "48": "images/icon48.png",
+            "128": "images/icon128.png"},
+  
+  "homepage_url": "https://www.pericror.com",
+  
+  "manifest_version": 2
+}

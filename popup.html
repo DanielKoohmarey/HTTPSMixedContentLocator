@@ -1,0 +1,33 @@
+<!--
+/*******************************************************************************
+*
+* HTTPS Mixed Content Locator Popup HTML
+* ______________________________________
+* [2017] Pericror
+* All Rights Reserved
+* Use of this source code is governed by the license found in the LICENSE file.
+*/
+-->
+<!doctype html>
+<html>
+  <head>
+    <title>Insecurities</title>
+    <link rel="stylesheet" type="text/css" href="popup.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <script src="popup.js"></script>
+    <script src="clipboard.min.js"></script>
+  </head>
+  <body>
+    <div id="insecureElements" class="divider">Insecure Elements<br><span class="small">(click to view element on page)</span></div>
+    <table name="insecureElements"></table>
+    <div id="blockedElements" class="divider">Blocked Elements<br><span class="small">(elements blocked by browser)</span></div>
+    <table name="blockedElements"></table>
+    <div id="insecureLinks" class="divider">Insecure Links<br><span class="small">(click to view element on page)</span></div>
+    <table name="insecureLinks"></table>
+    <div id="blockedLinks" class="divider">Blocked Links<br><span class="small">(elements blocked by browser)</span></div>
+    <table name="blockedLinks"></table>
+    <div id="default"><i class="material-icons">info_outline</i>No Mixed Content Detected.</div>
+    <div id="footer">HTTPS Mixed Content Locator powered by <a href="">Pericror</a></div>
+  </body>
+</html>
