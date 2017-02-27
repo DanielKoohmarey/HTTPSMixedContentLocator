@@ -79,7 +79,7 @@ function populateTable(id, className, highlight, mixedContent)
             }
             var clipboard = row.insertCell();
             clipboard.className = "clipboard"
-            clipboard.innerHTML = '<button class="material-icons">assignment</button>';
+            clipboard.innerHTML = '<button class="material-icons">content_copy</button>';
             clipboard.dataset['clipboardText'] = content.url;
             clipboard.dataset['ariaLabel'] = 'Copied!'
         }
