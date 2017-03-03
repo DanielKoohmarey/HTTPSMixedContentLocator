@@ -10,17 +10,18 @@
 // Function bound to locate button that requests content.js to highlight element
 function handleLocateClick(e) {
     var locateButton = e.target;
-    var prevLocated = document.getElementsByClassName('clicked');
+    var prevLocated = document.getElementsByClassName('clicked')[0];
     // Highlight the last last locate button clicked
-    if(prevLocated.length > 0)
+    if(prevLocated != undefined)
     {
-        if(prevLocated[0] === locateButton)
+        if(prevLocated === locateButton)
         {
-            prevLocated[0].classList.toggle('clicked');
+            prevLocated.classList.toggle('clicked');
         }
         else
         {
-            prevLocated[0].classList.remove('clicked');
+            prevLocated.classList.remove('clicked');
+            locateButton.classList.add('clicked');
         }
     }
     else
