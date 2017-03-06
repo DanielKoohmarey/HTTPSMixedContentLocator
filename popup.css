@@ -26,6 +26,10 @@ button {
     outline: none;
 }
 
+button:hover{
+    border: 3px solid #00AEEf;
+}
+
 a:link,
 a:visited,
 a:hover,
@@ -69,7 +73,9 @@ a:active {
 .tag {
     background-color: #00AEEF;
     color: white;
-    width: 25px;
+    width: 40px;
+    padding-left: 12px;
+    padding-right: 12px;
 }
 
 .type {
@@ -100,9 +106,14 @@ a:active {
     padding-left: 5px;
 }
 
-.clipboard>button:active
+.clipboard > button
 {
-    color: #00AEEF;
+     transition: background-color .375s ease;
+}
+
+.copied
+{
+    background-color: #00AEEF;
 }
 
 #default

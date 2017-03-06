@@ -17,21 +17,21 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
 
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
     if (changeInfo.status == 'complete' && tab.active) {
-        chrome.tabs.sendMessage(tabId, {from: 'background', subject: 'GetNumberofInsecureElements'},
+        chrome.tabs.sendMessage(tabId, {from: 'background', subject: 'GetNumberOfMixedContentElements'},
             updatebadge);
     }
 });
 
 chrome.tabs.onActivated.addListener( function (activeInfo) {
-    chrome.tabs.sendMessage(activeInfo.tabId, {from: 'background', subject: 'GetNumberofInsecureElements'},
+    chrome.tabs.sendMessage(activeInfo.tabId, {from: 'background', subject: 'GetNumberOfMixedContentElements'},
             updatebadge);
 });
 
-function updatebadge(numInsecureElements) {
-    if (numInsecureElements == 0) {
+function updatebadge(mixedContent) {
+    if (mixedContent == 0) {
         chrome.browserAction.setBadgeText({'text' : ''});
     } else {
-        chrome.browserAction.setBadgeText({'text' : numInsecureElements.toString()});
+        chrome.browserAction.setBadgeText({'text' : mixedContent.toString()});
         chrome.browserAction.setBadgeBackgroundColor({'color' : '#CA2E0B'});
     }
 }

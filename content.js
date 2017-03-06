@@ -7,51 +7,69 @@
 * Use of this source code is governed by the license found in the LICENSE file.
 */
 
-var mixedContentWarningTags = ["IMG", "AUDIO", "VIDEO", "SOURCE"];
+//NOTE: Current limitation: Active mixed content 
+// a. An insecure resource loaded from a style property
+// b. XMLHTTPRequest
+var passiveMixedContentTags = ["IMG", "AUDIO", "VIDEO", "SOURCE"];
+var activeMixedContentTags = ["IFRAME", "SCRIPT"];
 var lastHighlightedElem = null;
 
+// Gets mixed content on current page
 function getMixedContent() {
-    var insecureSources = [];
-    var insecureLinks = [];
-
+    var passiveMixedContent = [];
+    var activeMixedContent = [];
+    var https = false;
+    
     if( window.location.href.startsWith('https') ) {
-        var sources = Array.prototype.slice.call(
+        https = true;
+        
+        var srcTags = Array.prototype.slice.call(
             document.querySelectorAll("*[src^='http://']"));
-        for (i = 0; i < sources.length; i++) {
-            var url = sources[i].getAttribute("src");
-            if (mixedContentWarningTags.indexOf(sources[i].nodeName) > -1) {
-                insecureSources.push({'nodeName' : sources[i].nodeName, 
+        for (i = 0; i < srcTags.length; i++) {
+            var url = srcTags[i].getAttribute("src");
+            if (passiveMixedContentTags.indexOf(srcTags[i].nodeName) > -1) {
+                // Passive Mixed Content: audio, image, video, source
+                passiveMixedContent.push({'nodeName' : srcTags[i].nodeName, 
                                         'url': url,
                                         'type': 'src',
                                         'blocked': false});
-            } else {
-                // Mixed Content that is blocked (i.e insecure stylesheet)
-                insecureSources.push({'nodeName' : sources[i].nodeName,
+            } else if (activeMixedContentTags.indexOf(srcTags[i].nodeName) > -1){
+                // Active Mixed Content: iframe, script
+                activeMixedContent.push({'nodeName' : srcTags[i].nodeName,
                                         'url': url,
                                         'type': 'src',
                                         'blocked': true});
             } 
         }
 
+        // Active Mixed Content: object
+        var objects = Array.prototype.slice.call(
+            document.querySelectorAll("object[data^='http://']"));
+        for (i = 0; i < objects.length; i++) {
+            var url = objects[i].getAttribute("data");
+            activeMixedContent.push({'nodeName' : objects[i].nodeName,
+                                    'url': url,
+                                    'type': 'data',
+                                    'blocked': true});
+        }
+        
+        // Active Mixed Content: link (stylesheet)
         var links = Array.prototype.slice.call(
-            document.querySelectorAll("link[href^='http://']"));        
+            document.querySelectorAll("link[href^='http://']"));      
         for (i = 0; i < links.length; i++) {
             var url = links[i].getAttribute("href");
             if (links[i].hasAttribute("stylesheet")) {
-                insecureLinks.push({'nodeName' : links[i].nodeName,
+                activeMixedContent.push({'nodeName' : links[i].nodeName,
                                     'url': url,
                                     'type': 'href',
                                     'blocked': true});
-            } else {
-                insecureLinks.push({'nodeName' : links[i].nodeName,
-                                    'url': url,
-                                    'type': 'href',
-                                    'blocked': false});
             }
         }
     }
     
-    return {'sources':insecureSources, 'links':insecureLinks};
+    return {'passiveMixedContent':passiveMixedContent,
+            'activeMixedContent':activeMixedContent,
+            'https':https};
 }
 
 // Removes locate element highlighting on the page
@@ -99,9 +117,11 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
         }
     }
     else if(msg.from == 'background') {
-        if (msg.subject == 'GetNumberofInsecureElements') {
+        if (msg.subject == 'GetNumberOfMixedContentElements') {
             var mixedContent = getMixedContent();
-            sendResponse(mixedContent['sources'].length + mixedContent['links'].length);
+            var mixedContentElements = mixedContent['passiveMixedContent'].length + 
+                mixedContent['activeMixedContent'].length;
+            sendResponse(mixedContentElements);
         }   
     }
 });

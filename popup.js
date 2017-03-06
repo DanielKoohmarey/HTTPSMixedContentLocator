@@ -11,7 +11,7 @@
 function handleLocateClick(e) {
     var locateButton = e.target;
     var prevLocated = document.getElementsByClassName('clicked')[0];
-    // Highlight the last last locate button clicked
+    // Highlight only the last last locate button clicked
     if(prevLocated != undefined)
     {
         if(prevLocated === locateButton)
@@ -36,94 +36,92 @@ function handleLocateClick(e) {
     });
 }
 
+// Function bound to clipboard button that provides visual feedback
+function handleClipboardClick(e) {
+    var clipboardButton = e.target;
+    clipboardButton.classList.add('copied');
+    setTimeout(function(){clipboardButton.classList.remove('copied')}, 375);
+}
+
 // Populates the popup with rows of mixed content
-function populateTable(id, className, highlight, mixedContent)
-{
+function populateTable(id, highlight, mixedContent)
+{   
     document.getElementById(id).style.display = 'block';
     var table = document.getElementsByName(id)[0];
     table.style.display = 'table';
     
+    // Sort mixed content by tag type
+    mixedContent.sort(function(a, b) {
+        var x = a.nodeName; var y = b.nodeName;
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0))});
+    
     for (i = 0; i < mixedContent.length; i++) {
+        // Create the table row describing the mixed content
         var content = mixedContent[i];
-        if (content.blocked != true) {
-            var row = table.insertRow();
-            row.className = className;
-            var tag = row.insertCell();
-            tag.className = "data tag";
-            tag.innerHTML = content.nodeName;
-            var type = row.insertCell();
-            type.className = "data type";
-            type.innerHTML = content.type;
-            var url = row.insertCell();
-            url.className = "data url";
-            if(content.url.length > 37)
-            {
-                url.innerHTML = "..." +
-                    content.url.substr(content.url.length - 37, content.url.length);
-            }
-            else
-            {
-                url.innerHTML = content.url;
-            }
-            // Create the locate button if element can be highlighted
-            if(highlight) {
-                var locate = row.insertCell();
-                locate.className = "locate";
-                var locateButton = document.createElement('button');
-                locateButton.className = "material-icons";
-                locateButton.innerHTML = 'gps_fixed';
-                locateButton.onclick = handleLocateClick;
-                locateButton.dataset['nodeName'] = content.nodeName;
-                locateButton.dataset['url'] = content.url;
-                locateButton.dataset['type'] = content.type;
-                locate.appendChild(locateButton);
-            }
-            var clipboard = row.insertCell();
-            clipboard.className = "clipboard"
-            clipboard.innerHTML = '<button class="material-icons">content_copy</button>';
-            clipboard.dataset['clipboardText'] = content.url;
-            clipboard.dataset['ariaLabel'] = 'Copied!'
+        var row = table.insertRow();
+        row.className = "row";
+        var tag = row.insertCell();
+        tag.className = "data tag";
+        tag.innerHTML = content.nodeName;
+        var type = row.insertCell();
+        type.className = "data type";
+        type.innerHTML = content.type;
+        var url = row.insertCell();
+        url.className = "data url";
+        if(content.url.length > 37)
+        {
+            url.innerHTML = "..." +
+                content.url.substr(content.url.length - 37, content.url.length);
+        }
+        else
+        {
+            url.innerHTML = content.url;
+        }
+        // Create the copy button to copy the url to clipboard
+        var clipboard = row.insertCell();
+        clipboard.className = "clipboard"
+        clipboard.innerHTML = '<button class="material-icons">content_copy</button>';
+        clipboard.dataset['clipboardText'] = content.url;
+        clipboard.onclick = handleClipboardClick;       
+        // Create the locate button if element can be highlighted
+        if(highlight) {
+            var locate = row.insertCell();
+            locate.className = "locate";
+            var locateButton = document.createElement('button');
+            locateButton.className = "material-icons";
+            locateButton.innerHTML = 'gps_fixed';
+            locateButton.onclick = handleLocateClick;
+            locateButton.dataset['nodeName'] = content.nodeName;
+            locateButton.dataset['url'] = content.url;
+            locateButton.dataset['type'] = content.type;
+            locate.appendChild(locateButton);
         }
     }
 }
 
 // Callback to handle mixed content found by content.js
 function handleMixedContent(mixedContent) {
-	httpSources = mixedContent['sources'];
-	httpLinks = mixedContent['links'];
+	passiveMixedContent = mixedContent['passiveMixedContent'];
+	activeMixedContent = mixedContent['activeMixedContent'];
+    console.log(mixedContent);
 
-    if( httpSources.length > 0) {
-        var insecureElements = httpSources.filter(function(elem){return !elem.blocked;});
-        if(insecureElements.length > 0)
-        {
-            populateTable('insecureElements', 'row', true, insecureElements);
-        }
-        
-        var blockedElements = httpSources.filter(function(elem){return elem.blocked;});
-        if(blockedElements.length > 0)
-        {
-            populateTable('blockedElements', 'row', false, blockedElements);
-        } 
+    if( passiveMixedContent.length > 0) {
+        populateTable('passiveMixedContent', true, passiveMixedContent);
     }
 
-    if ( httpLinks.length > 0) {
-        var insecureLinks = httpLinks.filter(function(elem){return elem.blocked;});
-        if(insecureLinks.length > 0)
-        {
-            populateTable('insecureLinks', 'row', false, insecureLinks);
-        }  
-        
-        var blockedLinks = httpLinks.filter(function(elem){return !elem.blocked;});
-        if(blockedLinks.length > 0)
-        {
-            populateTable('blockedLinks', 'row', false, blockedLinks);
-        }          
+    if ( activeMixedContent.length > 0) {
+        populateTable('activeMixedContent', false, activeMixedContent);        
   	}
     
     // If no mixed content on page display default message
-    if(httpSources.length == 0 && httpLinks.length == 0)
+    if(passiveMixedContent.length == 0 && activeMixedContent.length == 0)
     {
         var defaultMessage = document.getElementById('default');
+        if(!mixedContent['https'])
+        {
+            defaultMessage.innerHTML = '<i class="material-icons">info_outline</i>' + 
+                'HTTP page, mixed content does not apply.';
+        }
         defaultMessage.style.display = 'block';
         var footer = document.getElementById('footer');
         footer.style.display = 'none';
