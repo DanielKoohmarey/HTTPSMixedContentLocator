@@ -88,7 +88,10 @@ function clearHighlight() {
 
 // Listen for disconnect when popup closes, clear any highlighting on page
 chrome.runtime.onConnect.addListener(function(port){
-    port.onDisconnect.addListener(function(e){clearHighlight()});
+    port.onDisconnect.addListener(function(e){
+        clearHighlight();
+        lastHighlightedElem = null;
+    });
 });
 
 chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
