@@ -27,11 +27,11 @@ chrome.tabs.onActivated.addListener( function (activeInfo) {
             updatebadge);
 });
 
-function updatebadge(mixedContent) {
-    if (mixedContent == 0) {
+function updatebadge(mixedContentDetected) {
+    if (mixedContentDetected == 0) {
         chrome.browserAction.setBadgeText({'text' : ''});
     } else {
-        chrome.browserAction.setBadgeText({'text' : mixedContent.toString()});
+        chrome.browserAction.setBadgeText({'text' : mixedContentDetected.toString()});
         chrome.browserAction.setBadgeBackgroundColor({'color' : '#CA2E0B'});
     }
 }

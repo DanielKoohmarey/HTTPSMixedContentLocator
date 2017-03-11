@@ -12,20 +12,14 @@ function handleLocateClick(e) {
     var locateButton = e.target;
     var prevLocated = document.getElementsByClassName('clicked')[0];
     // Highlight only the last last locate button clicked
-    if(prevLocated != undefined)
-    {
-        if(prevLocated === locateButton)
-        {
+    if(prevLocated != undefined) {
+        if(prevLocated === locateButton) {
             prevLocated.classList.toggle('clicked');
-        }
-        else
-        {
+        } else {
             prevLocated.classList.remove('clicked');
             locateButton.classList.add('clicked');
         }
-    }
-    else
-    {
+    } else {
         locateButton.classList.add('clicked');
     }
     chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
@@ -68,21 +62,20 @@ function populateTable(id, highlight, mixedContent)
         type.innerHTML = content.type;
         var url = row.insertCell();
         url.className = "data url";
-        if(content.url.length > 37)
-        {
+        if(content.url.length > 37) {
             url.innerHTML = "..." +
                 content.url.substr(content.url.length - 37, content.url.length);
-        }
-        else
-        {
+        } else {
             url.innerHTML = content.url;
         }
+        
         // Create the copy button to copy the url to clipboard
         var clipboard = row.insertCell();
         clipboard.className = "clipboard"
         clipboard.innerHTML = '<button class="material-icons">content_copy</button>';
         clipboard.dataset['clipboardText'] = content.url;
         clipboard.onclick = handleClipboardClick;       
+        
         // Create the locate button if element can be highlighted
         if(highlight) {
             var locate = row.insertCell();
@@ -101,30 +94,36 @@ function populateTable(id, highlight, mixedContent)
 
 // Callback to handle mixed content found by content.js
 function handleMixedContent(mixedContent) {
+    // Populate popup with passive mixed content 
 	passiveMixedContent = mixedContent['passiveMixedContent'];
-	activeMixedContent = mixedContent['activeMixedContent'];
-    console.log(mixedContent);
-
     if( passiveMixedContent.length > 0) {
         populateTable('passiveMixedContent', true, passiveMixedContent);
     }
-
+    
+    // Populate popup with active mixed content 
+    activeMixedContent = mixedContent['activeMixedContent'];
     if ( activeMixedContent.length > 0) {
         populateTable('activeMixedContent', false, activeMixedContent);        
-  	}
+  	}   
     
     // If no mixed content on page display default message
-    if(passiveMixedContent.length == 0 && activeMixedContent.length == 0)
-    {
+    var mixedContentDetected = passiveMixedContent.length +
+        activeMixedContent.length;
+    if(mixedContentDetected == 0) {
         var defaultMessage = document.getElementById('default');
-        if(!mixedContent['https'])
-        {
+        
+        // Display warning if page is not https
+        if(!mixedContent['https']) {
             defaultMessage.innerHTML = '<i class="material-icons">info_outline</i>' + 
                 'HTTP page, mixed content does not apply.';
         }
+        
         defaultMessage.style.display = 'block';
         var footer = document.getElementById('footer');
         footer.style.display = 'none';
+    } else {       
+        chrome.browserAction.setBadgeText({'text' : mixedContentDetected.toString()});
+        chrome.browserAction.setBadgeBackgroundColor({'color' : '#CA2E0B'});
     }
 }
 

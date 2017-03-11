@@ -33,7 +33,7 @@ function getMixedContent() {
                                         'url': url,
                                         'type': 'src',
                                         'blocked': false});
-            } else if (activeMixedContentTags.indexOf(srcTags[i].nodeName) > -1){
+            } else if (activeMixedContentTags.indexOf(srcTags[i].nodeName) > -1) {
                 // Active Mixed Content: iframe, script
                 activeMixedContent.push({'nodeName' : srcTags[i].nodeName,
                                         'url': url,
@@ -75,10 +75,8 @@ function getMixedContent() {
 // Removes locate element highlighting on the page
 function clearHighlight() {
     var crosshairLines = document.getElementsByClassName("crosshairLine");
-    if(crosshairLines.length == 4)
-    {
-        for( i = 0; i < 4; i++)
-        {
+    if(crosshairLines.length == 4) {
+        for( i = 0; i < 4; i++) {
            document.body.removeChild(crosshairLines[0]); 
         }           
     }
@@ -98,8 +96,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
         if (msg.subject == 'GetMixedContent') {
             var mixedContent = getMixedContent();
             sendResponse(mixedContent);
-        } 
-        else if (msg.subject == 'Highlight') {
+        } else if (msg.subject == 'Highlight') {
             clearHighlight();
             
             var query = msg.nodeName.toLowerCase() + '[' + msg.type + '^="' + msg.url + '"]';
@@ -109,9 +106,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
             {
                 drawCrossHairs(highlightElem);
                 lastHighlightedElem = highlightElem;           
-            }
-            else
-            {
+            } else {
                 lastHighlightedElem = null;
             }        
         }
