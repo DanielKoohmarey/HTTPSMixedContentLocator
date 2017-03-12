@@ -1,6 +1,6 @@
 {
   "name": "HTTPS Mixed Content Locator",
-  "description": "Easily locate and identify mixed content on any https site.",
+  "description": "Easily locate and identify mixed content on any HTTPS site.",
   "version": "1.0",
   "permissions": [
     "tabs", "https://*/*"
@@ -19,7 +19,7 @@
   ],
 
   "browser_action": {
-      "default_title": "Locate mixed content.",
+      "default_title": "Identify mixed content.",
       "default_icon": {
             "24": "images/icon24.png",
             "32": "images/icon32.png"
