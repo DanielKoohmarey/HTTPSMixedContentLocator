@@ -58,7 +58,7 @@ function getMixedContent() {
             document.querySelectorAll("link[href^='http://']"));      
         for (i = 0; i < links.length; i++) {
             var url = links[i].getAttribute("href");
-            if (links[i].hasAttribute("stylesheet")) {
+            if (links[i].getAttribute("rel") == "stylesheet") {
                 activeMixedContent.push({'nodeName' : links[i].nodeName,
                                     'url': url,
                                     'type': 'href',
