@@ -98,6 +98,12 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
     if (msg.from == 'popup') {
         if (msg.subject == 'GetMixedContent') {
             var mixedContent = getMixedContent();
+            if(mixedContent == undefined)
+            {
+                mixedContent = {'passiveMixedContent' : 0,
+                                'activeMixedContent' : 0,
+                                'https' : window.location.href.startsWith('https')};
+            }
             sendResponse(mixedContent);
         } else if (msg.subject == 'Highlight') {
             clearHighlight();
@@ -119,7 +125,7 @@ chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
             var mixedContent = getMixedContent();
             var mixedContentElements = mixedContent['passiveMixedContent'].length + 
                 mixedContent['activeMixedContent'].length;
-            sendResponse(mixedContentElements);
+            sendResponse({mixedContentDetected : mixedContentElements, tabId : msg.tabId});
         }   
     }
 });

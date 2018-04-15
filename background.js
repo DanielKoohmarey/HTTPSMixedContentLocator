@@ -17,21 +17,20 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
 
 chrome.tabs.onUpdated.addListener( function (tabId, changeInfo, tab) {
     if (changeInfo.status == 'complete' && tab.active) {
-        chrome.tabs.sendMessage(tabId, {from: 'background', subject: 'GetNumberOfMixedContentElements'},
-            updatebadge);
+        chrome.tabs.sendMessage(tabId, {from: 'background', 'tabId': tabId, 
+            subject: 'GetNumberOfMixedContentElements'}, updateBadge);
+    } 
+});
+
+function updateBadge(response) {
+    if(response == undefined) {
+        return;
     }
-});
-
-chrome.tabs.onActivated.addListener( function (activeInfo) {
-    chrome.tabs.sendMessage(activeInfo.tabId, {from: 'background', subject: 'GetNumberOfMixedContentElements'},
-            updatebadge);
-});
-
-function updatebadge(mixedContentDetected) {
-    if (mixedContentDetected == 0) {
-        chrome.browserAction.setBadgeText({'text' : ''});
+    else if (response.mixedContentDetected == 0) {
+        chrome.browserAction.setBadgeText({'text' : '', 'tabId':response['tabId']});
     } else {
-        chrome.browserAction.setBadgeText({'text' : mixedContentDetected.toString()});
-        chrome.browserAction.setBadgeBackgroundColor({'color' : '#CA2E0B'});
+        chrome.browserAction.setBadgeText({'text' : response.mixedContentDetected.toString(),
+                                            'tabId': response.tabId});
+        chrome.browserAction.setBadgeBackgroundColor({'color' : '#CA2E0B', 'tabId' : response.tabId});
     }
 }

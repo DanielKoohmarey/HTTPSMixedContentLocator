@@ -121,9 +121,6 @@ function handleMixedContent(mixedContent) {
         defaultMessage.style.display = 'block';
         var footer = document.getElementById('footer');
         footer.style.display = 'none';
-    } else {       
-        chrome.browserAction.setBadgeText({'text' : mixedContentDetected.toString()});
-        chrome.browserAction.setBadgeBackgroundColor({'color' : '#CA2E0B'});
     }
 }
 
